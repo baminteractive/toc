@@ -1,6 +1,7 @@
 suite('toc', function() {
 
   setup(function() {
+
     $('.toc').empty();
 
     var id = window.setTimeout(function() {}, 0);
@@ -13,7 +14,8 @@ suite('toc', function() {
 
     $(window).scrollTop(0);
 
-    $('span[id^="toc"]').remove();
+    $('h1,h2,h3').attr("id","");
+
   });
 
   suite('jquery', function() {
@@ -33,6 +35,31 @@ suite('toc', function() {
   });
 
   suite('toc navigation', function() {
+
+    test('should create hash #toc0 on first element', function() {
+      assert.equal($('.toc ul a').length, 0);
+
+      $('.toc').toc({
+        container: '#fixture'
+      });
+
+      assert.equal($('.toc ul a').attr('href'), "#toc0");
+
+    });
+
+    test('should create hash #toc3 on last element', function() {
+      assert.equal($('.toc ul a').length, 0);
+
+      $('.toc').toc({
+        container: '#fixture'
+      });
+
+      var $els = $('.toc ul a');
+
+      assert.equal($('.toc ul a').last().attr('href'), "#toc3");
+
+    });
+
     test('should contain links', function() {
       assert.equal($('.toc ul a').length, 0);
 
@@ -74,6 +101,22 @@ suite('toc', function() {
         assert.ok($('.toc ul li:eq(1)').hasClass('toc-active'));
         done();
       }, 110);
+    });
+  });
+
+  suite('toc with useIds enabled and prefix = ""', function() {
+
+    test('should create an id on the first heading that reads "Sub_Heading_A_test', function() {
+      assert.equal($('.toc ul a').length, 0);
+
+      $('.toc').toc({
+        container: '#fixture',
+        useIds: true,
+        prefix: ''
+      });
+
+      assert.equal($('#fixture h2').first().attr('id'), "Sub_Heading_A_test");
+
     });
   });
 });
