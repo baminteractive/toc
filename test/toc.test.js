@@ -14,6 +14,8 @@ suite('toc', function() {
 
     $(window).scrollTop(0);
 
+    $('html,body').animate({scrollTop:0}, 0);
+
     $('h1,h2,h3').attr("id","");
 
   });
@@ -101,6 +103,33 @@ suite('toc', function() {
         assert.ok($('.toc ul li:eq(1)').hasClass('toc-active'));
         done();
       }, 110);
+    });
+  });
+
+  suite('toc navigation with offset', function(){
+    test('should scroll to element on click with offset', function(done) {
+
+      assert.equal($(window).scrollTop(), 0);
+
+      var offset = 20;
+
+      $('.toc').toc({
+        container: '#fixture',
+        smoothScrolling: true,
+        offset_top: offset
+      });
+
+      assert.equal($('.toc a:first').attr('href'), "#toc0");
+
+      $('.toc a:first').click();
+
+      setTimeout(function(){
+        var elOffset = $('#toc0').offset().top - offset;
+        var windowTop = $(window).scrollTop();
+
+        assert.ok((windowTop <= elOffset + 5 && windowTop >= elOffset - 5));
+        done();
+      }, 800);
     });
   });
 

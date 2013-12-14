@@ -18,6 +18,12 @@ module.exports = function(grunt) {
         'test/*.js'
       ]
     },
+    removelogging:{
+      dist: {
+        src: 'lib/toc.js',
+        dest: 'lib/toc.js'
+      }
+    },
     concat: {
       options: {
         banner: '<%= meta.banner %>'
@@ -64,7 +70,8 @@ module.exports = function(grunt) {
       options: {
         run: true,
         growl: true,
-        reporter: 'Spec'
+        reporter: 'Spec',
+        log: true
       },
       all: {
         src: 'test/index.html'
@@ -100,7 +107,7 @@ module.exports = function(grunt) {
     }
   });
   require('load-grunt-tasks')(grunt);
-  grunt.registerTask('scripts', ['jshint', 'concat', 'uglify', 'mocha', 'bytesize']);
+  grunt.registerTask('scripts', ['removelogging', 'jshint', 'concat', 'uglify', 'mocha', 'bytesize']);
   grunt.registerTask('default', ['scripts']);
   grunt.registerTask('dev', ['connect:server', 'watch']);
   grunt.registerTask('reports', ['plato', 'connect:plato']);
