@@ -5,6 +5,13 @@
  * copyright Greg Allen 2013
  * MIT License
 */
+/*!
+ * toc - jQuery Table of Contents Plugin
+ * v0.1.2
+ * http://projects.jga.me/toc/
+ * copyright Greg Allen 2013
+ * MIT License
+ */
 (function($) {
   $.fn.toc = function(options) {
 
@@ -12,23 +19,34 @@
     var opts = $.extend({}, jQuery.fn.toc.defaults, options);
 
     var container = $(opts.container);
-    var listType  = $(opts.listType);
-    var headings  = $(opts.selectors, container);
+    var listType = $(opts.listType);
+    var headings = $(opts.selectors, container);
     var headingOffsets = [];
-    var activeClassName = opts.prefix+'-active';
+    var activeClassName = opts.prefix + '-active';
 
     var scrollTo = function(e) {
-      if (opts.smoothScrolling) {
-        e.preventDefault();
-        var elScrollTo = $(e.target).attr('href');
 
-        console.log('elScrollTo', elScrollTo);
+      e.preventDefault();
+
+      if (opts.smoothScrolling) {
+
+        var elScrollTo = $(e.target).attr('href');
 
         var $el = $(elScrollTo);
 
-        $('body,html').animate({ scrollTop: $el.offset().top }, 400, 'swing', function() {
-          location.hash = elScrollTo;
-        });
+        var scrollPos = $el.offset().top - opts.offset_top;
+
+        $('html').scrollTo({
+            top: scrollPos + 'px',
+            left: 0
+          },
+          400,
+          {
+            onAfter:function(){
+              location.hash = elScrollTo;
+            }
+          });
+
       }
       $('li', self).removeClass(activeClassName);
       $(e.target).parent().addClass(activeClassName);
@@ -46,7 +64,7 @@
         for (var i = 0, c = headingOffsets.length; i < c; i++) {
           if (headingOffsets[i] >= top) {
             $('li', self).removeClass(activeClassName);
-            highlighted = $('li:eq('+(i-1)+')', self).addClass(activeClassName);
+            highlighted = $('li:eq(' + (i - 1) + ')', self).addClass(activeClassName);
             opts.onHighlight(highlighted);
             break;
           }
@@ -61,8 +79,6 @@
 
     return this.each(function() {
 
-      console.log('starting this');
-
       //build TOC
       var el = $(this);
       var ul = $(listType);
@@ -73,7 +89,7 @@
         var $h = $(heading);
         headingOffsets.push($h.offset().top - opts.highlightOffset);
 
-        if(opts.useIds){
+        if (opts.useIds) {
           anchor = opts.headerId(this, i, heading, opts.prefix);
         } else {
           anchor = opts.anchorName(this, i, heading, opts.prefix);
@@ -86,7 +102,7 @@
           .text(opts.headerText(i, heading, $h))
           .attr('href', '#' + anchor)
           .bind('click', function(e) {
-            if(opts.smoothScrolling){
+            if (opts.smoothScrolling) {
               scrollTo(e);
             }
             el.trigger('selected', $(this).attr('href'));
@@ -99,8 +115,6 @@
         ul.append(li);
 
       });
-
-      console.log('appending to');
 
       el.html(ul);
 
@@ -117,13 +131,14 @@
     onHighlight: function() {},
     highlightOnScroll: true,
     highlightOffset: 100,
-    headerId: function(el, i, heading, prefix){
+    offset_top: 0,
+    headerId: function(el, i, heading, prefix) {
 
       var id = $(el).attr("id");
       var $heading = $(heading);
       var sanitized;
 
-      if(!id){
+      if (!id) {
         sanitized = $heading.text().split(' ').join('_').replace(/\W/g, '');
         id = prefix + encodeURIComponent(sanitized);
       }
@@ -131,7 +146,7 @@
       return id;
     },
     anchorName: function(el, i, heading, prefix) {
-      return prefix+i;
+      return prefix + i;
     },
     headerText: function(i, heading, $heading) {
       return $heading.text();
